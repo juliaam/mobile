@@ -1,18 +1,26 @@
-import { SafeAreaView, Text, View } from "react-native";
-import { RouteProp } from "@react-navigation/native";
+import {
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View,
+  StyleSheet,
+} from "react-native";
+import { RouteProp, useNavigation } from "@react-navigation/native";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 type CustomHeaderProps = {
   route: RouteProp<Record<string, object | undefined>, string>;
 };
 
 export function CustomHeader({ route }: CustomHeaderProps) {
-  // Define os títulos para cada rota
+  const navigation = useNavigation();
+
   const getHeaderData = () => {
     switch (route.name) {
-      case "Albums":
+      case "albums":
         return {
           title: "Albums",
-          subtitle: "Select one album to view",
+          subtitle: "Selecione o álbum para visualizar",
         };
       case "index":
         return {
@@ -32,16 +40,53 @@ export function CustomHeader({ route }: CustomHeaderProps) {
     }
   };
 
-  const { title, subtitle } = getHeaderData();
-
   return (
     <SafeAreaView style={{ backgroundColor: "white", paddingVertical: 20 }}>
-      <View style={{ alignItems: "center", paddingTop: 30 }}>
-        <Text style={{ fontSize: 20, fontWeight: "bold" }}>{title}</Text>
-        {subtitle ? (
-          <Text style={{ fontSize: 16, color: "gray" }}>{subtitle}</Text>
-        ) : null}
+      <View style={styles.header}>
+        {navigation.canGoBack() && (
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
+            <AntDesign name="arrowleft" size={24} color="black" />
+          </TouchableOpacity>
+        )}
+
+        <Text style={styles.title}>{getHeaderData().title}</Text>
+        <Text style={styles.subtitle}>{getHeaderData().subtitle}</Text>
       </View>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#F5F5F5",
+  },
+  header: {
+    paddingTop: 40,
+    paddingBottom: 15,
+    alignItems: "center",
+    backgroundColor: "#FFF",
+    borderBottomWidth: 1,
+    borderColor: "#DDD",
+    position: "relative",
+  },
+  backButton: {
+    position: "absolute",
+    left: 20,
+    top: 50,
+  },
+  backText: {
+    fontSize: 20,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+  },
+  subtitle: {
+    fontSize: 16,
+    color: "#666",
+  },
+});
