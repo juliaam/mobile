@@ -11,7 +11,6 @@ import {
   Text,
   Alert,
 } from "react-native";
-import { BlurView } from "expo-blur";
 import axios from "axios";
 import { useQuery } from "react-query";
 import { useSearchParams } from "expo-router/build/hooks";
@@ -80,7 +79,7 @@ const GalleryScreen = () => {
         <TouchableWithoutFeedback onPress={closeModal}>
           <View style={styles.modalOverlay}>
             <View style={styles.modalCard}>
-              <Text style={styles.modalTitle}>Um dia com os amigos</Text>
+              <Text style={styles.modalTitle}>{selectedImage?.title}</Text>
               {selectedImage && (
                 <Image
                   source={{ uri: selectedImage.url }}
@@ -99,15 +98,15 @@ const GalleryScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "white",
   },
   grid: {
     paddingTop: 10,
     alignItems: "center",
   },
   image: {
-    width: width / 3 - 10,
-    height: width / 3 - 10,
+    width: width / 3 - 30,
+    height: width / 3 - 30,
     margin: 5,
     borderRadius: 10,
     backgroundColor: "#DDD",
