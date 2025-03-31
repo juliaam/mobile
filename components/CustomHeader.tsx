@@ -12,6 +12,12 @@ type CustomHeaderProps = {
   route: RouteProp<Record<string, object | undefined>, string>;
 };
 
+type Params = {
+  userId?: string;
+  albumId?: string;
+  albumTitle?: string;
+};
+
 export function CustomHeader({ route }: CustomHeaderProps) {
   const navigation = useNavigation();
 
@@ -27,10 +33,10 @@ export function CustomHeader({ route }: CustomHeaderProps) {
           title: "Usuários",
           subtitle: "Selecione o usuário para entrar",
         };
-      case "gallery":
+      case "photos":
         return {
           title: "Fotos",
-          subtitle: "Itália",
+          subtitle: (route.params as Params)?.albumTitle ?? "",
         };
       default:
         return {

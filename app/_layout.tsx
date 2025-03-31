@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { CustomHeader } from "@/components/CustomHeader";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -19,6 +20,8 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
+
+  const queryClient = new QueryClient();
 
   useEffect(() => {
     if (loaded) {
@@ -32,13 +35,15 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack
-        screenOptions={{
-          headerShown: true,
-          header: ({ route }) => <CustomHeader route={route} />,
-        }}
-      />
-      <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+      <QueryClientProvider client={queryClient}>
+        <Stack
+          screenOptions={{
+            headerShown: true,
+            header: ({ route, navigation }) => <CustomHeader route={route} />,
+          }}
+        />
+        <StatusBar style="dark" />
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }

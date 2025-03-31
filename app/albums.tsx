@@ -1,4 +1,8 @@
-import { useRouter } from "expo-router";
+import { Loading } from "@/components/Loading";
+import { Album } from "@/types/Album";
+import axios from "axios";
+import { useNavigation, useRouter, useLocalSearchParams } from "expo-router";
+import { useSearchParams } from "expo-router/build/hooks";
 import React from "react";
 import {
   View,
@@ -7,55 +11,61 @@ import {
   TouchableOpacity,
   ScrollView,
   StatusBar,
-  Button,
+  Alert,
 } from "react-native";
+import { useQuery } from "react-query";
+
+const getAlbums = async (userId: string): Promise<Album[]> => {
+  const response = await axios.get(
+    `https://jsonplaceholder.typicode.com/users/${userId}/albums`,
+  );
+  return response.data;
+};
 
 const AlbumsScreen = () => {
   const router = useRouter();
-  // Dados dos álbuns - na prática viria de uma API ou estado
-  const albums = Array(6)
-    .fill({ name: "Itália" })
-    .map((item, index) => ({
-      id: index + 1,
-      ...item,
-    }));
+  const params = useSearchParams();
+  const userId = params.get("userId");
 
-  const handleAlbumPress = (album: any) => {
-    console.log("Álbum selecionado:", album.name);
+  const { isLoading, isError, data } = useQuery("albums", () => {
+    if (userId) {
+      return getAlbums(userId);
+    }
+  });
+
+  if (isLoading) return <Loading text="Carregando álbums..." />;
+  if (isError || !userId) return Alert.alert("Erro", "Algo deu errado");
+
+  const handleAlbumPress = (album: Album) => {
+    const queryParams = new URLSearchParams();
+    queryParams.append("albumId", String(album.id));
+    queryParams.append("albumTitle", album.title);
+    router.push(`/photos?${queryParams.toString()}`);
   };
 
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="#fff" barStyle="dark-content" />
 
-      {/* Cabeçalho */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Albums</Text>
-        <Text style={styles.subtitle}>Select one album to view</Text>
-      </View>
-
-      {/* Lista de Álbuns */}
       <ScrollView
         contentContainerStyle={styles.albumContainer}
         showsVerticalScrollIndicator={false}
       >
-        {albums.map((album) => (
+        {data?.map((album) => (
           <TouchableOpacity
             key={album.id}
             style={styles.albumItem}
             onPress={() => handleAlbumPress(album)}
             activeOpacity={0.7}
           >
-            <Text style={styles.albumText}>{album.name}</Text>
+            <Text style={styles.albumText}>{album.title}</Text>
           </TouchableOpacity>
         ))}
       </ScrollView>
-      <Button title="Ir para Álbuns" onPress={() => router.push("/gallery")} />
     </View>
   );
 };
 
-// Estilos COMPLETOS definidos aqui mesmo
 const styles = StyleSheet.create({
   container: {
     flex: 1,
