@@ -21,7 +21,7 @@ const { width } = Dimensions.get("window");
 
 const getPhotos = async (albumId: string): Promise<Photo[]> => {
   const response = await axios.get(
-    `https://jsonplaceholder.typicode.com/albums/${albumId}/photos`,
+    `https://my-json-server.typicode.com/juliaam/jsplaceholder/photos?albumId=${albumId}`,
   );
   return response.data.map(({ id, ...photo }: any) => {
     return {
